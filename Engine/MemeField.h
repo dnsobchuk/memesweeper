@@ -22,7 +22,7 @@ private:
 		bool IsRevealed() const;
 		bool IsFlagged() const;
 		bool HasMeme() const;
-		void Draw(const Vei2& screenPos, bool fucked, Graphics& gfx) const;
+		void Draw(const Vei2& screenPos, bool fucked, bool win, Graphics& gfx) const;
 		void SetNeighborMemeCount(int memeCount);
 	private:
 		State state = State::Hidden;
@@ -33,6 +33,7 @@ public:
 	MemeField(int nMemes);
 	void Draw(Graphics& gfx) const;
 	RectI GetRect() const;
+	int GetMemeCount() const;
 	void OnRevealClick(const Vei2 screenPos);
 	void OnFlagClick(const Vei2 screenPos);
 private:
@@ -43,10 +44,12 @@ private:
 	const Tile& TileAt(const class Vei2& gridPos) const;
 	Vei2 ScreenToGrid(const Vei2 screenPos) const;
 	int CountNeighborMemes(const Vei2& gridPos);
+	int nMemesCount = 0;
 private:
 	static constexpr int width = 6;
 	static constexpr int height = 4;
 	bool isFucked = false;
+	bool isGameWin = false;
 	Tile field[width * height];
 };
 

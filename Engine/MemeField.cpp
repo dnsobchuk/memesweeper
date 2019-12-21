@@ -45,9 +45,13 @@ bool MemeField::Tile::HasMeme() const
 	return hasMeme;
 }
 
-void MemeField::Tile::Draw(const Vei2& screenPos, bool fucked, Graphics& gfx) const
+void MemeField::Tile::Draw(const Vei2& screenPos, bool fucked, bool win, Graphics& gfx) const
 {
 	if (!fucked) {
+		if(win)
+		{
+			SpriteCodex::DrawWin(gfx);
+		}
 		switch (state)
 		{
 		case State::Hidden:
@@ -117,6 +121,7 @@ void MemeField::Tile::SetNeighborMemeCount(int memeCount)
 MemeField::MemeField(int nMemes)
 {
 	assert(nMemes > 0 && nMemes < width * height);
+	nMemesCount = nMemes;
 
 	MemeFieldPos = {
 		Graphics::GetScreenRect().GetCenter().x - (width * SpriteCodex::tileSize) / 2,
@@ -174,7 +179,7 @@ void MemeField::Draw(Graphics& gfx) const
 	{
 		for (gridPos.x = 0; gridPos.x < width; gridPos.x++)
 		{
-			TileAt(gridPos).Draw(gridPos * SpriteCodex::tileSize + MemeFieldPos, isFucked, gfx);
+			TileAt(gridPos).Draw(gridPos * SpriteCodex::tileSize + MemeFieldPos, isFucked, isGameWin, gfx);
 		}
 	}
 }
@@ -184,9 +189,14 @@ RectI MemeField::GetRect() const
 	return RectI(MemeFieldPos.x, width * SpriteCodex::tileSize + MemeFieldPos.x, MemeFieldPos.y, height * SpriteCodex::tileSize + MemeFieldPos.y);
 }
 
+int MemeField::GetMemeCount() const
+{
+	return nMemesCount;
+}
+
 void MemeField::OnRevealClick(const Vei2 screenPos)
 {
-	if (!isFucked)
+	if (!isFucked && !isGameWin)
 	{
 		const Vei2 gridPos = ScreenToGrid(screenPos);
 		assert(gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height);
@@ -205,7 +215,7 @@ void MemeField::OnRevealClick(const Vei2 screenPos)
 
 void MemeField::OnFlagClick(const Vei2 screenPos)
 {
-	if (!isFucked)
+	if (!isFucked && !isGameWin)
 	{
 		const Vei2 gridPos = ScreenToGrid(screenPos);
 		assert(gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height);
@@ -214,6 +224,18 @@ void MemeField::OnFlagClick(const Vei2 screenPos)
 		if (!tile.IsRevealed())
 		{
 			tile.ToggleFlag();
+		}
+		int countRight = 0;
+		for (const Tile tile : field)
+		{
+			if (tile.HasMeme() && tile.IsFlagged())
+			{
+				countRight++;
+			}
+		}
+		if (countRight == GetMemeCount())
+		{
+			isGameWin = true;
 		}
 	}
 }
