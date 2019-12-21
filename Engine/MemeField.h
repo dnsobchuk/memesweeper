@@ -36,6 +36,8 @@ public:
 	void OnRevealClick(const Vei2 screenPos);
 	void OnFlagClick(const Vei2 screenPos);
 private:
+	static constexpr int borderWidth = 8;
+	static constexpr Color borderColor = Colors::Blue;
 	Vei2 MemeFieldPos;
 	Tile& TileAt(const class Vei2& gridPos);
 	const Tile& TileAt(const class Vei2& gridPos) const;

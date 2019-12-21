@@ -149,8 +149,27 @@ MemeField::MemeField(int nMemes)
 
 void MemeField::Draw(Graphics& gfx) const
 {
-	gfx.DrawRect(GetRect(), SpriteCodex::baseColor);
+	const RectI rect = GetRect();
 
+	// Draw border
+	const int top = rect.top - borderWidth;
+	const int left = rect.left - borderWidth;
+	const int bottom = top + borderWidth * 2 + height * SpriteCodex::tileSize;
+	const int right = left + borderWidth * 2 + width * SpriteCodex::tileSize;
+
+	// top
+	gfx.DrawRect(left, top, right, top + borderWidth, borderColor);
+	// left
+	gfx.DrawRect(left, top + borderWidth, left + borderWidth, bottom - borderWidth, borderColor);
+	// right
+	gfx.DrawRect(right - borderWidth, top + borderWidth, right, bottom - borderWidth, borderColor);
+	// bottom
+	gfx.DrawRect(left, bottom - borderWidth, right, bottom, borderColor);
+
+	// Draw background
+	gfx.DrawRect(rect, SpriteCodex::baseColor);
+
+	// Draw cell
 	for (Vei2 gridPos = {0,0}; gridPos.y < height; gridPos.y++)
 	{
 		for (gridPos.x = 0; gridPos.x < width; gridPos.x++)
