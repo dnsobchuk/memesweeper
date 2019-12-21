@@ -369,3 +369,8 @@ std::wstring Graphics::Exception::GetExceptionType() const
 {
 	return L"Chili Graphics Exception";
 }
+
+RectI Graphics::GetScreenRect()
+{
+	return { 0, ScreenWidth, 0, ScreenHeight };
+}
