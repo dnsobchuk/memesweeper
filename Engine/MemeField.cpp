@@ -45,9 +45,9 @@ bool MemeField::Tile::HasMeme() const
 	return hasMeme;
 }
 
-void MemeField::Tile::Draw(const Vei2& screenPos, bool fucked, bool win, Graphics& gfx) const
+void MemeField::Tile::Draw(const Vei2& screenPos, MemeField::State fieldState, Graphics& gfx) const
 {
-	if (!fucked) {
+	if (fieldState != MemeField::State::Fucked) {
 		switch (state)
 		{
 		case State::Hidden:
@@ -119,7 +119,6 @@ MemeField::MemeField(const Vei2& center, int nMemes)
 	topLeft(center - Vei2(width * SpriteCodex::tileSize, height * SpriteCodex::tileSize) / 2)
 {
 	assert(nMemes > 0 && nMemes < width * height);
-	nMemesCount = nMemes;
 
 	std::random_device rd;
 	std::mt19937 rng(rd());
@@ -160,7 +159,7 @@ void MemeField::Draw(Graphics& gfx) const
 	{
 		for (gridPos.x = 0; gridPos.x < width; gridPos.x++)
 		{
-			TileAt(gridPos).Draw(topLeft + gridPos * SpriteCodex::tileSize, isFucked, GameIsWon(), gfx);
+			TileAt(gridPos).Draw(topLeft + gridPos * SpriteCodex::tileSize, state, gfx);
 		}
 	}
 }
@@ -172,7 +171,7 @@ RectI MemeField::GetRect() const
 
 void MemeField::OnRevealClick(const Vei2 screenPos)
 {
-	if (!isFucked)
+	if (state == MemeField::State::Memeing)
 	{
 		const Vei2 gridPos = ScreenToGrid(screenPos);
 		assert(gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height);
@@ -183,7 +182,15 @@ void MemeField::OnRevealClick(const Vei2 screenPos)
 			tile.Reveal();
 			if (tile.HasMeme())
 			{
-				isFucked = true;
+				state = State::Fucked;
+			}
+			else if (GameIsWon())
+			{
+				state = State::Winrar;
+			}
+			else 
+			{
+				state = State::Memeing;
 			}
 		}
 	}	
@@ -191,7 +198,7 @@ void MemeField::OnRevealClick(const Vei2 screenPos)
 
 void MemeField::OnFlagClick(const Vei2 screenPos)
 {
-	if (!isFucked)
+	if (state == State::Memeing)
 	{
 		const Vei2 gridPos = ScreenToGrid(screenPos);
 		assert(gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height);
@@ -252,4 +259,9 @@ bool MemeField::GameIsWon() const
 		}
 	}
 	return true;
+}
+
+MemeField::State MemeField::GetState() const
+{
+	return state;
 }

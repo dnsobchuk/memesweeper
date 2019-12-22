@@ -4,7 +4,13 @@
 
 class MemeField
 {
-
+public:
+	enum class State
+	{
+		Fucked,
+		Winrar,
+		Memeing
+	};
 private:
 	class Tile
 	{
@@ -22,7 +28,7 @@ private:
 		bool IsRevealed() const;
 		bool IsFlagged() const;
 		bool HasMeme() const;
-		void Draw(const Vei2& screenPos, bool fucked, bool win, Graphics& gfx) const;
+		void Draw(const Vei2& screenPos, MemeField::State fieldState, Graphics& gfx) const;
 		void SetNeighborMemeCount(int memeCount);
 	private:
 		State state = State::Hidden;
@@ -35,7 +41,7 @@ public:
 	RectI GetRect() const;
 	void OnRevealClick(const Vei2 screenPos);
 	void OnFlagClick(const Vei2 screenPos);
-	bool GameIsWon() const;
+	State GetState() const;
 private:
 	static constexpr int borderWidth = 8;
 	static constexpr Color borderColor = Colors::Blue;
@@ -44,11 +50,11 @@ private:
 	const Tile& TileAt(const class Vei2& gridPos) const;
 	Vei2 ScreenToGrid(const Vei2 screenPos) const;
 	int CountNeighborMemes(const Vei2& gridPos);
-	int nMemesCount = 0;
+	bool GameIsWon() const;
 private:
 	static constexpr int width = 6;
 	static constexpr int height = 4;
-	bool isFucked = false;
+	State state = State::Memeing;
 	Tile field[width * height];
 };
 

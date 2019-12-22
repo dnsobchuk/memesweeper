@@ -40,11 +40,13 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-	if (!field.GameIsWon())
+	
+	while (!wnd.mouse.IsEmpty())
 	{
-		while (!wnd.mouse.IsEmpty())
+		const auto e = wnd.mouse.Read();
+
+		if (field.GetState() == MemeField::State::Memeing)
 		{
-			const auto e = wnd.mouse.Read();
 			if (e.GetType() == Mouse::Event::Type::LPress)
 			{
 				const Vei2 mousePos = e.GetPos();
@@ -61,15 +63,15 @@ void Game::UpdateModel()
 					field.OnFlagClick(mousePos);
 				}
 			}
-
 		}
+
 	}
 }
 
 void Game::ComposeFrame()
 {
 	field.Draw(gfx);
-	if (field.GameIsWon())
+	if (field.GetState() == MemeField::State::Winrar)
 	{
 		SpriteCodex::DrawWin(gfx);
 	}
