@@ -29,6 +29,7 @@ private:
 		bool IsFlagged() const;
 		bool HasMeme() const;
 		void Draw(const Vei2& screenPos, MemeField::State fieldState, Graphics& gfx) const;
+		bool HasNoNeighborMemes() const;
 		void SetNeighborMemeCount(int memeCount);
 	private:
 		State state = State::Hidden;
@@ -43,6 +44,7 @@ public:
 	void OnFlagClick(const Vei2 screenPos);
 	State GetState() const;
 private:
+	void RevealTile(const Vei2& gridPos);
 	static constexpr int borderWidth = 8;
 	static constexpr Color borderColor = Colors::Blue;
 	Vei2 topLeft;

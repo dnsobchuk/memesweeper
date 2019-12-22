@@ -108,6 +108,11 @@ void MemeField::Tile::Draw(const Vei2& screenPos, MemeField::State fieldState, G
 	}
 }
 
+bool MemeField::Tile::HasNoNeighborMemes() const
+{
+	return nNeighborMemes == 0;
+}
+
 void MemeField::Tile::SetNeighborMemeCount(int memeCount)
 {
 	assert(nNeighborMemes == -1);
@@ -175,23 +180,10 @@ void MemeField::OnRevealClick(const Vei2 screenPos)
 	{
 		const Vei2 gridPos = ScreenToGrid(screenPos);
 		assert(gridPos.x >= 0 && gridPos.x < width && gridPos.y >= 0 && gridPos.y < height);
-
-		Tile& tile = TileAt(gridPos);
-		if (!tile.IsRevealed() && !tile.IsFlagged())
+		RevealTile(gridPos);
+		if (GameIsWon())
 		{
-			tile.Reveal();
-			if (tile.HasMeme())
-			{
-				state = State::Fucked;
-			}
-			else if (GameIsWon())
-			{
-				state = State::Winrar;
-			}
-			else 
-			{
-				state = State::Memeing;
-			}
+			state = State::Winrar;
 		}
 	}	
 }
@@ -264,4 +256,32 @@ bool MemeField::GameIsWon() const
 MemeField::State MemeField::GetState() const
 {
 	return state;
+}
+
+void MemeField::RevealTile(const Vei2& gridPos)
+{
+	Tile& tile = TileAt(gridPos);
+	if (!tile.IsRevealed() && !tile.IsFlagged())
+	{
+		tile.Reveal();
+		if (tile.HasMeme())
+		{
+			state = State::Fucked;
+		}
+		else if (tile.HasNoNeighborMemes())
+		{
+			const int xStart = std::max(0, gridPos.x - 1);
+			const int yStart = std::max(0, gridPos.y - 1);
+			const int xEnd = std::min(width - 1, gridPos.x + 1);
+			const int yEnd = std::min(height - 1, gridPos.y + 1);
+
+			for (Vei2 gridPos = { xStart,yStart }; gridPos.y <= yEnd; gridPos.y++)
+			{
+				for (gridPos.x = xStart; gridPos.x <= xEnd; gridPos.x++)
+				{
+					RevealTile(gridPos);
+				}
+			}
+		}
+	}
 }
