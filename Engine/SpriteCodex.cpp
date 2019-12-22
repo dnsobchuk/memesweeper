@@ -1514,7 +1514,7 @@ void SpriteCodex::DrawTileNumber(const Vei2& pos, int n, Graphics& gfx)
 
 void SpriteCodex::DrawWin(Graphics& gfx)
 {
-	const Vei2 pos = Graphics::GetScreenRect().GetCenter();
+	const Vei2 pos = gfx.GetRect().GetCenter();
 	const int x = pos.x - 254 / 2;
 	const int y = pos.y - 152 / 2;
 	gfx.PutPixel(9 + x, 6 + y, 222, 74, 0);

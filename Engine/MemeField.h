@@ -30,7 +30,7 @@ private:
 		int nNeighborMemes = -1;
 	};
 public:
-	MemeField(int nMemes);
+	MemeField(const Vei2& center, int nMemes);
 	void Draw(Graphics& gfx) const;
 	RectI GetRect() const;
 	int GetMemeCount() const;
@@ -39,7 +39,7 @@ public:
 private:
 	static constexpr int borderWidth = 8;
 	static constexpr Color borderColor = Colors::Blue;
-	Vei2 MemeFieldPos;
+	Vei2 topLeft;
 	Tile& TileAt(const class Vei2& gridPos);
 	const Tile& TileAt(const class Vei2& gridPos) const;
 	Vei2 ScreenToGrid(const Vei2 screenPos) const;

@@ -64,7 +64,7 @@ public:
 		DrawRect( rect.left,rect.top,rect.right,rect.bottom,c );
 	}
 	~Graphics();
-	static RectI GetScreenRect();
+	RectI GetRect() const;
 private:
 	Microsoft::WRL::ComPtr<IDXGISwapChain>				pSwapChain;
 	Microsoft::WRL::ComPtr<ID3D11Device>				pDevice;

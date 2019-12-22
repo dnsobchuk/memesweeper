@@ -118,15 +118,12 @@ void MemeField::Tile::SetNeighborMemeCount(int memeCount)
 	nNeighborMemes = memeCount;
 }
 
-MemeField::MemeField(int nMemes)
+MemeField::MemeField(const Vei2& center, int nMemes)
+	:
+	topLeft(center - Vei2(width * SpriteCodex::tileSize, height * SpriteCodex::tileSize) / 2)
 {
 	assert(nMemes > 0 && nMemes < width * height);
 	nMemesCount = nMemes;
-
-	MemeFieldPos = {
-		Graphics::GetScreenRect().GetCenter().x - (width * SpriteCodex::tileSize) / 2,
-		Graphics::GetScreenRect().GetCenter().y - (height * SpriteCodex::tileSize) / 2
-	};
 
 	std::random_device rd;
 	std::mt19937 rng(rd());
@@ -157,19 +154,7 @@ void MemeField::Draw(Graphics& gfx) const
 	const RectI rect = GetRect();
 
 	// Draw border
-	const int top = rect.top - borderWidth;
-	const int left = rect.left - borderWidth;
-	const int bottom = top + borderWidth * 2 + height * SpriteCodex::tileSize;
-	const int right = left + borderWidth * 2 + width * SpriteCodex::tileSize;
-
-	// top
-	gfx.DrawRect(left, top, right, top + borderWidth, borderColor);
-	// left
-	gfx.DrawRect(left, top + borderWidth, left + borderWidth, bottom - borderWidth, borderColor);
-	// right
-	gfx.DrawRect(right - borderWidth, top + borderWidth, right, bottom - borderWidth, borderColor);
-	// bottom
-	gfx.DrawRect(left, bottom - borderWidth, right, bottom, borderColor);
+	gfx.DrawRect(rect.GetExpanded(borderWidth), borderColor);
 
 	// Draw background
 	gfx.DrawRect(rect, SpriteCodex::baseColor);
@@ -179,14 +164,14 @@ void MemeField::Draw(Graphics& gfx) const
 	{
 		for (gridPos.x = 0; gridPos.x < width; gridPos.x++)
 		{
-			TileAt(gridPos).Draw(gridPos * SpriteCodex::tileSize + MemeFieldPos, isFucked, isGameWin, gfx);
+			TileAt(gridPos).Draw(topLeft + gridPos * SpriteCodex::tileSize, isFucked, isGameWin, gfx);
 		}
 	}
 }
 
 RectI MemeField::GetRect() const
 {
-	return RectI(MemeFieldPos.x, width * SpriteCodex::tileSize + MemeFieldPos.x, MemeFieldPos.y, height * SpriteCodex::tileSize + MemeFieldPos.y);
+	return RectI(topLeft, width * SpriteCodex::tileSize, height * SpriteCodex::tileSize);
 }
 
 int MemeField::GetMemeCount() const
@@ -252,7 +237,7 @@ const MemeField::Tile& MemeField::TileAt(const Vei2& gridPos) const
 
 Vei2 MemeField::ScreenToGrid(const Vei2 screenPos) const
 {
-	return (screenPos - MemeFieldPos) / SpriteCodex::tileSize;
+	return (screenPos - topLeft) / SpriteCodex::tileSize;
 }
 
 int MemeField::CountNeighborMemes(const Vei2& gridPos)
