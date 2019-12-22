@@ -33,9 +33,9 @@ public:
 	MemeField(const Vei2& center, int nMemes);
 	void Draw(Graphics& gfx) const;
 	RectI GetRect() const;
-	int GetMemeCount() const;
 	void OnRevealClick(const Vei2 screenPos);
 	void OnFlagClick(const Vei2 screenPos);
+	bool GameIsWon() const;
 private:
 	static constexpr int borderWidth = 8;
 	static constexpr Color borderColor = Colors::Blue;
@@ -49,7 +49,6 @@ private:
 	static constexpr int width = 6;
 	static constexpr int height = 4;
 	bool isFucked = false;
-	bool isGameWin = false;
 	Tile field[width * height];
 };
 

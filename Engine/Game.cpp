@@ -20,6 +20,7 @@
  ******************************************************************************************/
 #include "MainWindow.h"
 #include "Game.h"
+#include "SpriteCodex.h"
 
 Game::Game( MainWindow& wnd )
 	:
@@ -39,30 +40,37 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-	while (!wnd.mouse.IsEmpty())
+	if (!field.GameIsWon())
 	{
-		const auto e = wnd.mouse.Read();
-		if (e.GetType() == Mouse::Event::Type::LPress)
+		while (!wnd.mouse.IsEmpty())
 		{
-			const Vei2 mousePos = e.GetPos();
-			if (field.GetRect().Contains(mousePos))
+			const auto e = wnd.mouse.Read();
+			if (e.GetType() == Mouse::Event::Type::LPress)
 			{
-				field.OnRevealClick(mousePos);
+				const Vei2 mousePos = e.GetPos();
+				if (field.GetRect().Contains(mousePos))
+				{
+					field.OnRevealClick(mousePos);
+				}
 			}
-		}
-		else if (e.GetType() == Mouse::Event::Type::RPress)
-		{
-			const Vei2 mousePos = e.GetPos();
-			if (field.GetRect().Contains(mousePos))
+			else if (e.GetType() == Mouse::Event::Type::RPress)
 			{
-				field.OnFlagClick(mousePos);
+				const Vei2 mousePos = e.GetPos();
+				if (field.GetRect().Contains(mousePos))
+				{
+					field.OnFlagClick(mousePos);
+				}
 			}
-		}
 
+		}
 	}
 }
 
 void Game::ComposeFrame()
 {
 	field.Draw(gfx);
+	if (field.GameIsWon())
+	{
+		SpriteCodex::DrawWin(gfx);
+	}
 }
